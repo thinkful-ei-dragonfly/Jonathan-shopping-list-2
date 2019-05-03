@@ -2,7 +2,7 @@
 const STORE = {
   items: [
     {id: cuid(), name: 'apples', checked: false, isEditing: false},
-    {id: cuid(), name: 'oranges', checked: false}, isEditing: false,
+    {id: cuid(), name: 'oranges', checked: false, isEditing: false},
     {id: cuid(), name: 'milk', checked: true, isEditing: false},
     {id: cuid(), name: 'bread', checked: false, isEditing: false}
   ],
@@ -11,35 +11,60 @@ const STORE = {
 };
 
 function generateItemElement(item, itemIndex, template){
+  let itemMainTitle;
+  if(item.isEditing){
+    itemMainTitle = `
+    <form id="edit-item-name-form">
+      <input type="text" name="edit-name"
+      class="js-edit-item-name" value="${item.name}"/>
+    </form>
+    `;
+  }
+  else{
+    itemMainTitle= `
+    <span class="shopping-item js-shopping-item ${item.checked ? "shopping-item__checked": ''}">
+    ${item.name}
+    </span>`;
+  }
+  const disabledStatus = item.isEditing ? 'disabled': '';
   return `
-  <li data-item-id='${item.id}'>
-    <span class='shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}'>${item.name}</span>
-    <div class='shopping-item-controls'>
-      <button class='shopping-item-toggle js-item-toggle'>
-        <span class='button-labe'>check</span>
+  <li data-item-id="${item.id}">
+    ${itemMainTitle}
+    <div class="shopping-item-controls">
+      <button class="shopping-item-toggle js-item-toggle" ${disabledStatus}>
+          <span class="button-label">check</span>
       </button>
-      <button class='shopping-item-delete js-item-delete'>
-        <span class='button-label'>delete</span>
+      <button class="shopping-item-delete js-item-delete" ${disabledStatus}>
+          <span class="button-label">delete</span>
       </button>
     </div>
-    </li>`;
+  </li>`;
+  
 }
 
 function generateShoppingItemsString(shoppingList){
   console.log('Generating shopping list element');
 
-  const items = shoppingList.map((item, index) => generateItemElement(item,index));
+  const items = shoppingList.map((item) => generateItemElement(item));
   
   return items.join('');
 }
 
 function renderShoppingList(){
-  const shoppingListItemsString = generateShoppingItemsString(STORE);
+  let filteredItems = STORE.items;
+  if(STORE.hideCompleted){
+    filteredItems = filteredItems.filter(item => !item.checked);
+  }
+  $('.js-search-term').val(STORE.searchTerm);
+  if(STORE.searchTerm){
+    filteredItems = filteredItems.filter(item => item.name.includes(STORE.searchTerm));
+  }
+  const shoppingListItemsString = generateShoppingItemsString(filteredItems);
   $('.js-shopping-list').html(shoppingListItemsString);
 }
 
 function addItemToShoppingList(itemName){
-  STORE.push({id: cuid(), name: itemName, checked: false});
+  STORE.items.push({id: cuid(), name: itemName, checked: false, isEditing: false});
 }
 
 function handleNewItemSubmit(){
@@ -53,7 +78,7 @@ function handleNewItemSubmit(){
 }
 
 function toggleCheckedForListItem(itemId){
-  const item = STORE.find(item => item.id === itemId);
+  const item = STORE.items.find(item => item.id === itemId);
   item.checked = !item.checked;
 }
 function getItemIDFromElement(item){
@@ -72,7 +97,7 @@ function handleItemCheckClicked(){
 
 function deleteItem(itemId){
   const itemIndex = STORE.findIndex(item => item.id === itemId);
-  STORE.splice(itemIndex, 1);
+  STORE.items.splice(itemIndex, 1);
 }
 
 function handleDeleteItemClicked(){
@@ -93,20 +118,52 @@ function handleToggleHideFilter(){
   });
 }
 
+function setSearchTerm(searchTerm){
+  STORE.searchTerm = searchTerm;
+}
 function handleSearchSubmit(){
-
+  $('#js-search-term-form').on('submit', event =>{
+    event.preventDefault();
+    const searchTerm = $('.js-search-term').val();
+    setSearchTerm(searchTerm);
+    renderShoppingList();
+  })
 }
 
 function handleSearchClear(){
+  $('#search-form-clear').on('click',() => {
+    setSearchTerm('');
+    renderShoppingList();
+  });
+}
 
+function setItemIsEditing(itemId, isEditing) {
+  const targetItem = STORE.items.find(item => item.id === itemId);
+  targetItem.isEditing = isEditing;
 }
 
 function handleEditNameClick(){
-
+  $('.js-shopping-list').on('click', '.js-shopping-item', event => {
+    const id = getItemIDFromElement(event.target);
+    setItemIsEditing(id, true);
+    renderShoppingList();
+  });
 }
 
-function HandleEditItemForm(){
-  
+function editItemName(itemId, newName){
+  const targetItem = STORE.items.find(item => item.id === itemId);
+  targetItem.name = newName;
+}
+
+function handleEditItemForm(){
+  $('.js-shopping-list').on('submit', '#edit-item-name-form', event => {
+    event.preventDefault();
+    const id = getItemIdFromElement(event.target);
+    const newName = $('.js-edit-item-name').val();
+    editItemName(id, newName);
+    setItemIsEditing(id, false);
+    renderShoppingList();
+  })
 }
 
 function handleShoppingList(){
