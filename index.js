@@ -1,10 +1,14 @@
 'use strict';
-const STORE = [
-  {id: cuid(), name: 'apples', checked: false},
-  {id: cuid(), name: 'oranges', checked: false},
-  {id: cuid(), name: 'milk', checked: true},
-  {id: cuid(), name: 'bread', checked: false}
-];
+const STORE = {
+  items: [
+    {id: cuid(), name: 'apples', checked: false, isEditing: false},
+    {id: cuid(), name: 'oranges', checked: false}, isEditing: false,
+    {id: cuid(), name: 'milk', checked: true, isEditing: false},
+    {id: cuid(), name: 'bread', checked: false, isEditing: false}
+  ],
+  hideCompleted: false,
+  searchTerm: null,
+};
 
 function generateItemElement(item, itemIndex, template){
   return `
@@ -79,11 +83,42 @@ function handleDeleteItemClicked(){
   });
 }
 
+function toggleHideFilter(){
+  STORE.hideCompleted = !STORE.hideCompleted;
+}
+function handleToggleHideFilter(){
+  $('.js-hide-completed-toggle').on('click', () => {
+    toggleHideFilter();
+    renderShoppingList();
+  });
+}
+
+function handleSearchSubmit(){
+
+}
+
+function handleSearchClear(){
+
+}
+
+function handleEditNameClick(){
+
+}
+
+function HandleEditItemForm(){
+  
+}
+
 function handleShoppingList(){
   renderShoppingList();
   handleNewItemSubmit();
   handleItemCheckClicked();
   handleDeleteItemClicked();
+  handleToggleHideFilter();
+  handleSearchSubmit();
+  handleSearchClear();
+  handleEditNameClick();
+  handleEditItemForm();
 }
 
 $(handleShoppingList);
