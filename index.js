@@ -158,12 +158,12 @@ function editItemName(itemId, newName){
 function handleEditItemForm(){
   $('.js-shopping-list').on('submit', '#edit-item-name-form', event => {
     event.preventDefault();
-    const id = getItemIdFromElement(event.target);
+    const id = getItemIDFromElement(event.target);
     const newName = $('.js-edit-item-name').val();
     editItemName(id, newName);
     setItemIsEditing(id, false);
     renderShoppingList();
-  })
+  });
 }
 
 function handleShoppingList(){
