@@ -10,7 +10,7 @@ const STORE = {
   searchTerm: null,
 };
 
-function generateItemElement(item, itemIndex, template){
+function generateItemElement(item){
   let itemMainTitle;
   if(item.isEditing){
     itemMainTitle = `
@@ -22,7 +22,7 @@ function generateItemElement(item, itemIndex, template){
   }
   else{
     itemMainTitle= `
-    <span class="shopping-item js-shopping-item ${item.checked ? "shopping-item__checked": ''}">
+    <span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked': ''}">
     ${item.name}
     </span>`;
   }
@@ -96,7 +96,7 @@ function handleItemCheckClicked(){
 }
 
 function deleteItem(itemId){
-  const itemIndex = STORE.findIndex(item => item.id === itemId);
+  const itemIndex = STORE.items.findIndex(item => item.id === itemId);
   STORE.items.splice(itemIndex, 1);
 }
 
