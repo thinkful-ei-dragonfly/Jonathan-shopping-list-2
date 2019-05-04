@@ -127,7 +127,7 @@ function handleSearchSubmit(){
     const searchTerm = $('.js-search-term').val();
     setSearchTerm(searchTerm);
     renderShoppingList();
-  })
+  });
 }
 
 function handleSearchClear(){
