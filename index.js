@@ -59,6 +59,14 @@ function renderShoppingList(){
   $('.js-shopping-list').html(shoppingListItemsString);
 }
 
+function generateShoppingItemsString(shoppingList){
+  console.log('Generating shopping list element');
+
+  const items = shoppingList.map((item) => generateItemElement(item));
+  
+  return items.join('');
+}
+
 function generateItemElement(item){
   let itemMainTitle;
   if(item.isEditing){
@@ -90,15 +98,6 @@ function generateItemElement(item){
   </li>`;
   
 }
-
-function generateShoppingItemsString(shoppingList){
-  console.log('Generating shopping list element');
-
-  const items = shoppingList.map((item) => generateItemElement(item));
-  
-  return items.join('');
-}
-
 
 // Control Functions (User Input)
 
