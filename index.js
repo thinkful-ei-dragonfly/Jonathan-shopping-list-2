@@ -1,4 +1,6 @@
 'use strict';
+// Model-View-Controller in JavaScript (https://alexatnet.com/model-view-controller-mvc-in-javascript/)
+
 // Model Functions (Manipulation of the Store)
 const STORE = {
   items: [
