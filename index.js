@@ -1,4 +1,5 @@
 'use strict';
+// Model Functions (Manipulation of the Store)
 const STORE = {
   items: [
     {id: cuid(), name: 'apples', checked: false, isEditing: false},
@@ -9,6 +10,52 @@ const STORE = {
   hideCompleted: false,
   searchTerm: null,
 };
+
+function addItemToShoppingList(itemName){
+  STORE.items.push({id: cuid(), name: itemName, checked: false, isEditing: false});
+}
+
+function deleteItem(itemId){
+  const itemIndex = STORE.items.findIndex(item => item.id === itemId);
+  STORE.items.splice(itemIndex, 1);
+}
+
+function setSearchTerm(searchTerm){
+  STORE.searchTerm = searchTerm;
+}
+
+function editItemName(itemId, newName){
+  const targetItem = STORE.items.find(item => item.id === itemId);
+  targetItem.name = newName;
+}
+
+function setItemIsEditing(itemId, isEditing) {
+  const targetItem = STORE.items.find(item => item.id === itemId);
+  targetItem.isEditing = isEditing;
+}
+
+function toggleHideFilter(){
+  STORE.hideCompleted = !STORE.hideCompleted;
+}
+
+function toggleCheckedForListItem(itemId){
+  const item = STORE.items.find(item => item.id === itemId);
+  item.checked = !item.checked;
+}
+
+// View (Render Functions)
+function renderShoppingList(){
+  let filteredItems = STORE.items;
+  if(STORE.hideCompleted){
+    filteredItems = filteredItems.filter(item => !item.checked);
+  }
+  $('.js-search-term').val(STORE.searchTerm);
+  if(STORE.searchTerm){
+    filteredItems = filteredItems.filter(item => item.name.includes(STORE.searchTerm));
+  }
+  const shoppingListItemsString = generateShoppingItemsString(filteredItems);
+  $('.js-shopping-list').html(shoppingListItemsString);
+}
 
 function generateItemElement(item){
   let itemMainTitle;
@@ -50,22 +97,8 @@ function generateShoppingItemsString(shoppingList){
   return items.join('');
 }
 
-function renderShoppingList(){
-  let filteredItems = STORE.items;
-  if(STORE.hideCompleted){
-    filteredItems = filteredItems.filter(item => !item.checked);
-  }
-  $('.js-search-term').val(STORE.searchTerm);
-  if(STORE.searchTerm){
-    filteredItems = filteredItems.filter(item => item.name.includes(STORE.searchTerm));
-  }
-  const shoppingListItemsString = generateShoppingItemsString(filteredItems);
-  $('.js-shopping-list').html(shoppingListItemsString);
-}
 
-function addItemToShoppingList(itemName){
-  STORE.items.push({id: cuid(), name: itemName, checked: false, isEditing: false});
-}
+// Control Functions (User Input)
 
 function handleNewItemSubmit(){
 
@@ -75,11 +108,6 @@ function handleNewItemSubmit(){
     $('.js-shopping-list-entry').val('');
     addItemToShoppingList(newItemName);
     renderShoppingList();});
-}
-
-function toggleCheckedForListItem(itemId){
-  const item = STORE.items.find(item => item.id === itemId);
-  item.checked = !item.checked;
 }
 function getItemIDFromElement(item){
   return $(item)
@@ -95,21 +123,12 @@ function handleItemCheckClicked(){
   });
 }
 
-function deleteItem(itemId){
-  const itemIndex = STORE.items.findIndex(item => item.id === itemId);
-  STORE.items.splice(itemIndex, 1);
-}
-
 function handleDeleteItemClicked(){
   $('.js-shopping-list').on('click','.js-item-delete', event => {
     const id = getItemIDFromElement(event.currentTarget);
     deleteItem(id);
     renderShoppingList();
   });
-}
-
-function toggleHideFilter(){
-  STORE.hideCompleted = !STORE.hideCompleted;
 }
 function handleToggleHideFilter(){
   $('.js-hide-completed-toggle').on('click', () => {
@@ -118,9 +137,6 @@ function handleToggleHideFilter(){
   });
 }
 
-function setSearchTerm(searchTerm){
-  STORE.searchTerm = searchTerm;
-}
 function handleSearchSubmit(){
   $('#js-search-term-form').on('submit', event =>{
     event.preventDefault();
@@ -137,22 +153,12 @@ function handleSearchClear(){
   });
 }
 
-function setItemIsEditing(itemId, isEditing) {
-  const targetItem = STORE.items.find(item => item.id === itemId);
-  targetItem.isEditing = isEditing;
-}
-
 function handleEditNameClick(){
   $('.js-shopping-list').on('click', '.js-shopping-item', event => {
     const id = getItemIDFromElement(event.target);
     setItemIsEditing(id, true);
     renderShoppingList();
   });
-}
-
-function editItemName(itemId, newName){
-  const targetItem = STORE.items.find(item => item.id === itemId);
-  targetItem.name = newName;
 }
 
 function handleEditItemForm(){
