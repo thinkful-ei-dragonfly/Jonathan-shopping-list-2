@@ -101,6 +101,12 @@ function generateItemElement(item){
 
 // Control Functions (User Input)
 
+function getItemIDFromElement(item){
+  return $(item)
+    .closest('li')
+    .data('item-id');
+}
+
 function handleNewItemSubmit(){
 
   $('#js-shopping-list-form').submit(function(e){
@@ -109,11 +115,6 @@ function handleNewItemSubmit(){
     $('.js-shopping-list-entry').val('');
     addItemToShoppingList(newItemName);
     renderShoppingList();});
-}
-function getItemIDFromElement(item){
-  return $(item)
-    .closest('li')
-    .data('item-id');
 }
 
 function handleItemCheckClicked(){
@@ -131,6 +132,7 @@ function handleDeleteItemClicked(){
     renderShoppingList();
   });
 }
+
 function handleToggleHideFilter(){
   $('.js-hide-completed-toggle').on('click', () => {
     toggleHideFilter();
